@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<title>BranNewURPJW</title>
+	</head>
+	<body>
+		{% include 'header.html' %}
+
+		<form name="login" class="container form-horizontal" method="POST" onsubmit="return validateForm()">
+			<div class="form-group">
+				<label for="username" class="col-sm-2 control-label">用户名(学工号)</label>
+				<div class="col-sm-10">
+					{% if request.cookies.get('username') %}
+					<input type="username" name="username" class="col-sm-2 form-control" placeholder="用户名" value="{{ request.cookies.get('username') }}" />
+					{% else %}
+					<input type="username" name="username" class="col-sm-2 form-control" placeholder="用户名"/>
+					{% endif %}
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password" class="col-sm-2 control-label">密码</label>
+				<div class="col-sm-10">
+					{% if request.cookies.get('password') %}
+					<input type="password" name="password" class="col-sm-2 form-control" placeholder="密码" value="{{ request.cookies.get('password') }}" />
+					{% else %}
+					<input type="password" name="password" class="col-sm-2 form-control" placeholder="密码"/>
+					{% endif %}
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="vcode" class="col-sm-2 control-label">验证码</label>	
+				<div class="col-sm-10 form-inline">
+					<input type="text" name="vcode" id="vcode" class="col-sm-2 form-control" placeholder="验证码"/>
+					<img class="img-responsive" src="/vcode" alt="验证码"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<div class="checkbox">
+						<label>
+							{% if request.cookies.get('username') and request.cookies.get('password') %}
+							<input type="checkbox" name="save" checked>保存用户名及密码？
+							{% else %}
+							<input type="checkbox" name="save">保存用户名及密码？
+							{% endif %}
+						</label>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-default">登录</button>
+				</div>
+			</div>
+		</form>
+		
+		{% include 'footer.html' %}
+
+	    <script src="static/js/jquery.min.js"></script>
+	    <script src="static/js/bootstrap.min.js"></script>
+	    <script type="text/javascript">
+	    	function validateForm() {
+				var username = document.forms["main"]["username"].value;
+				var password = document.forms["main"]["password"].value;
+				var vcode = document.forms["main"]["vcode"].value;
+				if (username == null || username == "") {
+					alert("用户名必须填写");
+
+					return false;
+				}
+
+				if (password == null || password == "") {
+					alert("密码必须填写");
+
+					return false;
+				}
+
+				if (vcode == null || vcode == "") {
+					alert("验证码必须填写");
+
+					return false;
+				}
+			}
+
+			function getCookie(cname) {
+			    var name = cname + "=";
+			    var decodedCookie = decodeURIComponent(document.cookie);
+			    var ca = decodedCookie.split(";");
+
+			    for(var i = 0; i<ca.length; i++) {
+			        var c = ca[i];
+
+			        while (c.charAt(0) == " ") {
+			            c = c.substring(1);
+			        }
+
+			        if (c.indexOf(name) == 0) {
+			        	return c.substring(name.length, c.length);
+			        }
+			    }
+
+			    return "";
+			} 
+
+			document.onreadystatechange = listen;
+			function listen() {
+				if(document.readyState == "complete") {
+					var vcode = document.getElementById("vcode"); 
+
+					vcode.value =  getCookie("vcode");
+				}
+			}
+	    </script>
+	</body>
+</html>

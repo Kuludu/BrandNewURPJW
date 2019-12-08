@@ -1,0 +1,15 @@
+<header>
+	<nav class="container navbar navbar-default" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand">BrandNewURPJW(Beta 1.0)</a>
+			</div>
+
+			{% if session['login'] == 1 %}
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="logout">登出</a></li>
+				</ul>
+			{% endif %}
+		</div>
+	</nav>
+</header>
