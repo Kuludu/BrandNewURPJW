@@ -38,23 +38,38 @@ class Student:
         self.college = ''.join(dom[24].text.split())
         self.major = ''.join(dom[25].text.split())
 
-    def __get_gpa(self, content, course_amount, tot_point):
+    def __get_course(self, content, course_amount, tot_point):
         cur_sum_point = cur_sum_score = 0
         cur_dom = BeautifulSoup(str(content), 'html.parser')
         tot_course = cur_dom.find_all('td', align='center')
+        tot_course_info = []
 
         for i in range(0, course_amount):
-            if ''.join(tot_course[5 + i * 7].get_text().split()) == '必修':
-                cur_sum_point += float(tot_course[4 + i * 7].get_text()) * get_gp(
-                    float(tot_course[6 + i * 7].get_text()))
-                cur_sum_score += float(tot_course[4 + i * 7].get_text()) * float(tot_course[6 + i * 7].get_text())
+            course_info = []
+            course_info.append(''.join(tot_course[0 + i * 7].get_text().split()))
+            course_info.append(''.join(tot_course[1 + i * 7].get_text().split()))
+            course_info.append(''.join(tot_course[2 + i * 7].get_text().split()))
+            course_info.append(float(''.join(tot_course[4 + i * 7].get_text().split())))
+            course_info.append(''.join(tot_course[5 + i * 7].get_text().split()))
+            course_info.append(float(''.join(tot_course[6 + i * 7].get_text().split())))
+            course_info.append(get_gp(course_info[5]))
+
+            type = course_info[4]
+            if type == '必修' or type == '体育选修':
+                cur_sum_point += course_info[3] * course_info[6]
+                cur_sum_score += course_info[3] * course_info[5]
             else:
-                tot_point -= float(tot_course[4 + i * 7].get_text())
+                tot_point -= course_info[3]
+
+            tot_course_info.append(course_info)
 
         self.sum_gpa += cur_sum_point
         self.sum_point += tot_point
 
-        return [cur_sum_point / tot_point, cur_sum_score / tot_point, tot_point]
+        try:
+            return [cur_sum_point / tot_point, cur_sum_score / tot_point, tot_point, tot_course_info]
+        except ZeroDivisionError:
+            return [0, 0, 0, []]
 
     def __get_gradeinfo(self, res):
         dom = BeautifulSoup(res.text, 'html.parser')
@@ -73,7 +88,7 @@ class Student:
             tot_course = int(tot_info.split()[5])
             pass_cource = int(tot_info.split()[7])
 
-            gpa_info = self.__get_gpa(cur_dom, pass_info[1], tot_point)
+            gpa_info = self.__get_course(cur_dom, pass_info[1], tot_point)
 
             ret.append(title.text)
             ret.append(gpa_info[2])
@@ -81,7 +96,7 @@ class Student:
             ret.append(pass_cource)
             ret.append(gpa_info[0])
             ret.append(gpa_info[1])
-            ret.append(tot_course - pass_cource)
+            ret.append(gpa_info[3])
 
             self.terms.append(ret)
 

@@ -1,0 +1,30 @@
+{% for term in stuff.terms %}
+<table class="table">
+    <caption>{{ term[0] }}</caption>
+    <thead>
+        <tr>
+          <th>课程号</th>
+          <th>课序号</th>
+          <th>课程名</th>
+          <th>学分</th>
+          <th>课程属性</th>
+          <th>成绩</th>
+          <th>对应绩点</th>
+        <th>
+    </tr>
+ </thead>
+ <tbody>
+ 	{% for course in term[6] %}
+    <tr>
+      <td>{{ course[0] }}</td>
+      <td>{{ course[1] }}</td>
+      <td>{{ course[2] }}</td>
+      <td>{{ course[3] }}</td>
+      <td>{{ course[4] }}</td>
+      <td>{{ course[5] }}</td>
+      <td>{{ course[6] }}</td>
+    </tr>
+    {% endfor %}
+ </tbody>
+</table>
+{% endfor %}

@@ -14,12 +14,12 @@
  <tbody>
  	{% for term in stuff.terms %}
     <tr>
-      <td>{{term[0]}}</td>
-      <td>{{term[1]}}</td>
-      <td>{{term[2]}}</td>
-      <td>{{term[3]}}</td>
-      <td>{{term[4]}}</td>
-      <td>{{term[5]}}</td>
+      <td>{{ term[0] }}</td>
+      <td>{{ term[1] }}</td>
+      <td>{{ term[2] }}</td>
+      <td>{{ term[3] }}</td>
+      <td>{{ term[4] }}</td>
+      <td>{{ term[5] }}</td>
       <td>
       	{% if term[2] - term[3] > 1 %}
       	<b>你挂科了，且补考/重修未通过，共计{{ term[2] - term[3] }}科</b>
