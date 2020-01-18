@@ -17,16 +17,13 @@
 
 		<ul id="nav" class="container nav nav-tabs">
 			<li class="active">
-				<a href="#gpa" data-toggle="tab">GPA计算</a>
+				<a href="#grade_gpa" data-toggle="tab">成绩查询与GPA计算</a>
 			</li>
 			<li>
 				<a href="#evaluation" data-toggle="tab">一键教评</a>
 			</li>
 			<li>
-				<a href="#exam" data-toggle="tab">考试查询</a>
-			</li>
-			<li>
-				<a href="#grade" data-toggle="tab">成绩查询</a>
+				<a href="#exam" data-toggle="tab">学期考试查询</a>
 			</li>
 			<li>
 				<a href="#course" data-toggle="tab">选课辅助</a>
@@ -34,9 +31,9 @@
 		</ul>
 
 		<div id="navContent" class="tab-content">
-			<div class="tab-pane fade in active" id="gpa">
+			<div class="tab-pane fade in active" id="grade_gpa">
 				<div class="container">
-					{% include 'gpa.html' %}
+					{% include 'grade_gpa.html' %}
 				</div>
 			</div>
 			<div class="tab-pane fade" id="evaluation">
@@ -46,12 +43,7 @@
 			</div>
 			<div class="tab-pane fade" id="exam">
 				<div class="container">
-					<p>尚未完成</p>
-				</div>
-			</div>
-			<div class="tab-pane fade" id="grade">
-				<div class="container">
-					{% include 'grade.html' %}
+					{% include 'exam.html' %}
 				</div>
 			</div>
 			<div class="tab-pane fade" id="course">

@@ -1,0 +1,25 @@
+<table class="table">
+ <caption>{{ stuff.major }}培养方案</caption>
+ <thead>
+    <tr>
+      <th>教学楼</th>
+      <th>教室</th>
+      <th>课程</th>
+      <th>考试周次</th>
+      <th>考试星期</th>
+      <th>考试时间</th>
+    </tr>
+ </thead>
+ <tbody>
+ 	{% for exam in stuff.exams %}
+    <tr>
+      <td>{{ exam[0] }}</td>
+      <td>{{ exam[1] }}</td>
+      <td>{{ exam[2] }}</td>
+      <td>{{ exam[3] }}</td>
+      <td>{{ exam[4] }}</td>
+      <td>{{ exam[5] }}</td>
+    </tr>
+    {% endfor %}
+ </tbody>
+</table>

@@ -6,6 +6,8 @@ import connect
 
 
 def get_gp(score):
+    score = float(score)
+
     if score >= 90:
         return 4.0
     elif 85 <= score < 90:
@@ -31,85 +33,70 @@ def get_gp(score):
 class Student:
     def __get_name(self, res):
         dom = BeautifulSoup(res.text, 'html.parser')
-
         dom = dom.find_all('td', width='275')
 
         self.name = ''.join((dom[1].text + '(' + dom[0].text + ')').split())
         self.college = ''.join(dom[24].text.split())
         self.major = ''.join(dom[25].text.split())
 
-    def __get_course(self, content, course_amount, tot_point):
-        cur_sum_point = cur_sum_score = 0
-        cur_dom = BeautifulSoup(str(content), 'html.parser')
-        tot_course = cur_dom.find_all('td', align='center')
-        tot_course_info = []
-
-        for i in range(0, course_amount):
-            course_info = []
-            course_info.append(''.join(tot_course[0 + i * 7].get_text().split()))
-            course_info.append(''.join(tot_course[1 + i * 7].get_text().split()))
-            course_info.append(''.join(tot_course[2 + i * 7].get_text().split()))
-            course_info.append(float(''.join(tot_course[4 + i * 7].get_text().split())))
-            course_info.append(''.join(tot_course[5 + i * 7].get_text().split()))
-            course_info.append(float(''.join(tot_course[6 + i * 7].get_text().split())))
-            course_info.append(get_gp(course_info[5]))
-
-            type = course_info[4]
-            if type == '必修' or type == '体育选修':
-                cur_sum_point += course_info[3] * course_info[6]
-                cur_sum_score += course_info[3] * course_info[5]
-            else:
-                tot_point -= course_info[3]
-
-            tot_course_info.append(course_info)
-
-        self.sum_gpa += cur_sum_point
-        self.sum_point += tot_point
-
-        try:
-            return [cur_sum_point / tot_point, cur_sum_score / tot_point, tot_point, tot_course_info]
-        except ZeroDivisionError:
-            return [0, 0, 0, []]
-
-    def __get_gradeinfo(self, res):
+    def __get_all_grade_info(self, res):
         dom = BeautifulSoup(res.text, 'html.parser')
-        titles = dom.select('b')
+        courses_dom = dom.find_all('tr', class_='odd')
 
-        i = 0
-        for title in titles:
-            ret = []
+        for course_dom in courses_dom:
+            cur_dom = BeautifulSoup(str(course_dom), 'html.parser')
+            course_info = cur_dom.find_all('td')
 
-            cur_dom = dom.find_all('table', class_='titleTop2')[i]
-            cur_dom = BeautifulSoup(str(cur_dom), 'html.parser')
-            tot_info = cur_dom.find(height='21').get_text()
+            self.courses.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
+                                 course_info[4].get_text(), course_info[5].get_text(), float(course_info[6].get_text()),
+                                 get_gp(course_info[6].get_text())])
 
-            pass_info = [int(s) for s in tot_info.split() if s.isdigit()]
-            tot_point = float(tot_info.split()[3])
-            tot_course = int(tot_info.split()[5])
-            pass_cource = int(tot_info.split()[7])
+            if float(course_info[6].get_text()) >= 60:
+                self.pass_point += float(course_info[4].get_text())
+            else:
+                self.fails.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
+                                   course_info[4].get_text(), course_info[5].get_text(), course_info[6].get_text()])
+                self.fail_point += float(course_info[4].get_text())
 
-            gpa_info = self.__get_course(cur_dom, pass_info[1], tot_point)
+            if course_info[5] == '任选':
+                self.elective_point += float(course_info[4].get_text())
+                continue
 
-            ret.append(title.text)
-            ret.append(gpa_info[2])
-            ret.append(tot_course)
-            ret.append(pass_cource)
-            ret.append(gpa_info[0])
-            ret.append(gpa_info[1])
-            ret.append(gpa_info[3])
+            self.sum_gp_with_weight += float(course_info[4].get_text()) * float(get_gp(course_info[6].get_text()))
+            self.sum_grade_with_weight += float(course_info[4].get_text()) * float(course_info[6].get_text())
 
-            self.terms.append(ret)
+    def __get_exam_info(self, res):
+        dom = BeautifulSoup(res.text, 'html.parser')
+        exams_dom = dom.find_all('tr', class_='odd')
 
-            i += 1
+        for exam_dom in exams_dom:
+            cur_dom = BeautifulSoup(str(exam_dom), 'html.parser')
+            exam_info = cur_dom.find_all('td')
 
-        self.tot_gpa = self.sum_gpa / self.sum_point
+            self.exams.append([exam_info[2].get_text(), exam_info[3].get_text(), exam_info[4].get_text(), exam_info[5].
+                              get_text(), exam_info[6].get_text(), exam_info[7].get_text()])
 
     def load(self):
         self.__get_name(connect.get_name_content(self))
-        self.__get_gradeinfo(connect.get_gradeinfo_content(self))
+        self.__get_all_grade_info(connect.get_all_grade_info_content(self))
+        self.__get_exam_info(connect.get_exam_content(self))
 
+        try:
+            self.gpa = self.sum_gp_with_weight / (self.pass_point + self.fail_point - self.elective_point)
+            self.ave_grade = self.sum_grade_with_weight / (self.pass_point + self.fail_point - self.elective_point)
+        except ZeroDivisionError:
+            self.gpa = self.ave_grade = 0
+            
     def __init__(self):
-        self.gpa = self.sum_gpa = self.sum_point = 0
-        self.terms = []
+        self.pass_point = 0
+        self.fail_point = 0
+        self.elective_point = 0
+        self.sum_gp_with_weight = 0
+        self.sum_grade_with_weight = 0
+        self.gpa = 0
+        self.ave_grade = 0
+        self.courses = []
+        self.exams = []
+        self.fails = []
         self.session = requests.Session()
         self.headers = connect.init_headers

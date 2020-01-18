@@ -1,0 +1,62 @@
+<p>{{ stuff.major }}培养方案</p>
+{% if stuff.fails %}
+<table class="table">
+  <caption><font color="red">不及格成绩</font></caption>
+  <thead>
+    <tr>
+      <th>课程号</th>
+      <th>课序号</th>
+      <th>课程名</th>
+      <th>学分</th>
+      <th>课程属性</th>
+      <th>成绩</th>
+      <th>对应绩点</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for fail in stuff.fails %}
+    <tr>
+      <td>{{ fail[0] }}</td>
+      <td>{{ fail[1] }}</td>
+      <td>{{ fail[2] }}</td>
+      <td>{{ fail[3] }}</td>
+      <td>{{ fail[4] }}</td>
+      <td>{{ fail[5] }}</td>
+      <td>0.0</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+<table class="table">
+  <caption>全部成绩</caption>
+  <thead>
+    <tr>
+      <th>课程号</th>
+      <th>课序号</th>
+      <th>课程名</th>
+      <th>学分</th>
+      <th>课程属性</th>
+      <th>成绩</th>
+      <th>对应绩点</th>
+  </thead>
+  <tbody>
+    {% for course in stuff.courses %}
+    <tr>
+      <td>{{ course[0] }}</td>
+      <td>{{ course[1] }}</td>
+      <td>{{ course[2] }}</td>
+      <td>{{ course[3] }}</td>
+      <td>{{ course[4] }}</td>
+      {% if course[5] >= 90 %}
+      <td><font color="green">{{ course[5] }}</font></td>
+      <td><font color="green">{{ course[6] }}</font></td>
+      {% else %}
+      <td>{{ course[5] }}</td>
+      <td>{{ course[6] }}</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p>总通过学分：{{ stuff.pass_point }}，未通过学分：{{ stuff.fail_point }}，GPA（不含选修）：{{ stuff.gpa }}，加权平均分（不含选修）：{{ stuff.ave_grade }}</p>

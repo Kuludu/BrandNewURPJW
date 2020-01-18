@@ -8,7 +8,8 @@ host = config.host
 login_url = 'http://' + host + '/loginAction.do'
 vcode_url = 'http://' + host + '/validateCodeAction.do'
 name_url = 'http://' + host + '/xjInfoAction.do?oper=xjxx'
-grade_url = 'http://' + host + '/gradeLnAllAction.do?type=ln&oper=qbinfo'
+all_grade_url = 'http://' + host + '/gradeLnAllAction.do?type=ln&oper=fainfo&fajhh=17318'
+exam_url = 'http://' + host + '/ksApCxAction.do?oper=getKsapXx'
 
 init_headers = {
     'Connection': 'Keep-Alive',
@@ -69,8 +70,15 @@ def get_name_content(student):
         return False
 
 
-def get_gradeinfo_content(student):
+def get_all_grade_info_content(student):
     try:
-        return student.session.get(grade_url, headers=student.headers)
+        return student.session.get(all_grade_url, headers=student.headers)
+    except ConnectionError:
+        return False
+
+
+def get_exam_content(student):
+    try:
+        return student.session.get(exam_url, headers=student.headers)
     except ConnectionError:
         return False
