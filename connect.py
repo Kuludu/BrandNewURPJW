@@ -8,7 +8,7 @@ host = config.host
 login_url = 'http://' + host + '/loginAction.do'
 vcode_url = 'http://' + host + '/validateCodeAction.do'
 name_url = 'http://' + host + '/xjInfoAction.do?oper=xjxx'
-all_grade_url = 'http://' + host + '/gradeLnAllAction.do?type=ln&oper=fainfo&fajhh=17318'
+all_grade_url = 'http://' + host + '/gradeLnAllAction.do?type=ln&oper=fainfo'
 exam_url = 'http://' + host + '/ksApCxAction.do?oper=getKsapXx'
 
 init_headers = {
