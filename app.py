@@ -41,6 +41,9 @@ def index():
         if request.form.get('save'):
             resp.set_cookie('username', username)
             resp.set_cookie('password', password)
+        else:
+            resp.delete_cookie('username', username)
+            resp.delete_cookie('password', password)
 
     return resp
 
@@ -54,6 +57,22 @@ def manage():
         if connect.test_login(vis_student):
             vis_student.load()
             resp = make_response(render_template('manage.html', stuff=vis_student))
+
+    return resp
+
+
+@app.route('/evaluation', methods=['GET', 'POST'])
+def evaluation():
+    if request.method == 'GET':
+        return redirect(url_for('index'))
+
+    resp = make_response(render_template('evaluation.html', status=0))
+
+    if session.get('student') is not None:
+        vis_student = pickle.loads(session['student'])
+        if connect.test_login(vis_student):
+            if vis_student.evaluate() is True:
+                resp = make_response(render_template('evaluation.html', status=1))
 
     return resp
 
@@ -74,7 +93,8 @@ def vcode():
         img = Image.open(BytesIO(checkcode.content))
 
         optcode = pytesseract.image_to_string(img)
-        optcode = optcode.replace(' ', '')
+        optcode = filter(str.isalnum, optcode)
+        optcode = ''.join(list(optcode))
         resp.set_cookie('vcode', optcode)
 
     return resp

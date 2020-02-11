@@ -86,7 +86,10 @@ class Student:
             self.ave_grade = self.sum_grade_with_weight / (self.pass_point + self.fail_point - self.elective_point)
         except ZeroDivisionError:
             self.gpa = self.ave_grade = 0
-            
+
+    def evaluate(self):
+        return False
+
     def __init__(self):
         self.pass_point = 0
         self.fail_point = 0

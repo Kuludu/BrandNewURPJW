@@ -10,6 +10,7 @@ vcode_url = 'http://' + host + '/validateCodeAction.do'
 name_url = 'http://' + host + '/xjInfoAction.do?oper=xjxx'
 all_grade_url = 'http://' + host + '/gradeLnAllAction.do?type=ln&oper=fainfo'
 exam_url = 'http://' + host + '/ksApCxAction.do?oper=getKsapXx'
+eva_url = 'http://' + host + '/jxpgXsAction.do?oper=listWj'
 
 init_headers = {
     'Connection': 'Keep-Alive',
@@ -80,5 +81,12 @@ def get_all_grade_info_content(student):
 def get_exam_content(student):
     try:
         return student.session.get(exam_url, headers=student.headers)
+    except ConnectionError:
+        return False
+
+
+def get_eva_content(student):
+    try:
+        return student.session.get(eva_url, headers=student.headers)
     except ConnectionError:
         return False

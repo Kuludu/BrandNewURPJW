@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<title>BranNewURPJW-evaluation</title>
+	</head>
+	<body>
+		{% include 'header.html' %}
+
+		{% if status == 1 %}
+		<div class="alert alert-success container">
+			成功完成教评！
+		</div>
+		<div style="margin-bottom: 16px;" class="container">
+			<a class="btn btn-default" href="/">点我返回</a>
+		</div>
+		{% else %}
+		<div class="alert alert-danger container">
+			教评错误 :{
+		</div>
+		<div style="margin-bottom: 16px;" class="container">
+			<a class="btn btn-default" href="/">点我返回</a>
+		</div>
+		{% endif %}
+
+		{% include 'footer.html' %}
+
+		<script src="static/js/jquery.min.js"></script>
+	    <script src="static/js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			
+		</script>
+	</body>
+</html>
