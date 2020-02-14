@@ -47,29 +47,33 @@ class Student:
             cur_dom = BeautifulSoup(str(course_dom), 'html.parser')
             course_info = cur_dom.find_all('td')
 
-            self.courses.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
-                                 course_info[4].get_text(), course_info[5].get_text(), float(course_info[6].get_text()),
-                                 get_gp(course_info[6].get_text())])
+            try:
+                self.courses.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
+                                     course_info[4].get_text(), course_info[5].get_text(), float(course_info[6].get_text()),
+                                     get_gp(course_info[6].get_text())])
 
-            if float(course_info[6].get_text()) >= 60:
-                self.pass_point += float(course_info[4].get_text())
-            else:
-                self.fails.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
-                                   course_info[4].get_text(), course_info[5].get_text(), course_info[6].get_text()])
-                self.fail_point += float(course_info[4].get_text())
+                if float(course_info[6].get_text()) >= 60:
+                    self.pass_point += float(course_info[4].get_text())
+                else:
+                    self.fails.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
+                                       course_info[4].get_text(), course_info[5].get_text(), course_info[6].get_text()])
+                    self.fail_point += float(course_info[4].get_text())
 
-            if course_info[5] == '任选':
-                self.elective_point += float(course_info[4].get_text())
-                continue
+                if course_info[5] == '任选':
+                    self.elective_point += float(course_info[4].get_text())
+                    continue
 
-            self.sum_gp_with_weight += float(course_info[4].get_text()) * float(get_gp(course_info[6].get_text()))
-            self.sum_grade_with_weight += float(course_info[4].get_text()) * float(course_info[6].get_text())
+                self.sum_gp_with_weight += float(course_info[4].get_text()) * float(get_gp(course_info[6].get_text()))
+                self.sum_grade_with_weight += float(course_info[4].get_text()) * float(course_info[6].get_text())
+
+            except ValueError:
+                return False
 
     def __get_exam_info(self, res):
         dom = BeautifulSoup(res.text, 'html.parser')
-        exams_dom = dom.find_all('tr', class_='odd')
+        exam_doms = dom.find_all('tr', class_='odd')
 
-        for exam_dom in exams_dom:
+        for exam_dom in exam_doms:
             cur_dom = BeautifulSoup(str(exam_dom), 'html.parser')
             exam_info = cur_dom.find_all('td')
 
@@ -78,7 +82,10 @@ class Student:
 
     def load(self):
         self.__get_name(connect.get_name_content(self))
-        self.__get_all_grade_info(connect.get_all_grade_info_content(self))
+
+        if self.__get_all_grade_info(connect.get_all_grade_info_content(self)) is False:
+            return False
+
         self.__get_exam_info(connect.get_exam_content(self))
 
         try:
@@ -88,7 +95,17 @@ class Student:
             self.gpa = self.ave_grade = 0
 
     def evaluate(self):
-        return False
+        res = connect.get_eva_list(self)
+        if res is False:
+            return False
+
+        dom = BeautifulSoup(res.text, 'html.parser')
+        eva_doms = dom.find_all('img', border=0)
+
+        for eva_dom in eva_doms:
+            e = eva_dom['name'].split('#@')
+            if connect.evaluate(self, e[1], e[5]) is False:
+                return False
 
     def __init__(self):
         self.pass_point = 0
@@ -102,4 +119,3 @@ class Student:
         self.exams = []
         self.fails = []
         self.session = requests.Session()
-        self.headers = connect.init_headers

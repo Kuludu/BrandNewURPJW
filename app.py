@@ -55,7 +55,8 @@ def manage():
     if session.get('student') is not None:
         vis_student = pickle.loads(session['student'])
         if connect.test_login(vis_student):
-            vis_student.load()
+            if vis_student.load() is False:
+                return make_response(render_template('error.html', message="暂不支持等级制成绩"))
             resp = make_response(render_template('manage.html', stuff=vis_student))
 
     return resp
@@ -71,7 +72,7 @@ def evaluation():
     if session.get('student') is not None:
         vis_student = pickle.loads(session['student'])
         if connect.test_login(vis_student):
-            if vis_student.evaluate() is True:
+            if vis_student.evaluate() is not False:
                 resp = make_response(render_template('evaluation.html', status=1))
 
     return resp
@@ -86,8 +87,8 @@ def vcode():
     checkcode = connect.get_vcode(vis_student)
     session['student'] = pickle.dumps(vis_student)
 
-    if not checkcode:
-        resp = 500
+    if checkcode is False:
+        resp = make_response(render_template('error.html', message="网络连接错误！"))
     else:
         resp = make_response(checkcode.content)
         img = Image.open(BytesIO(checkcode.content))
