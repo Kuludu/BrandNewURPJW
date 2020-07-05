@@ -1,5 +1,4 @@
-requests
-beautifulsoup4
-pytesseract
-PIL
 Flask==1.0.2
+requests==2.24.0
+muggle_ocr==1.0.3
+beautifulsoup4==4.9.1

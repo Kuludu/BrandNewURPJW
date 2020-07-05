@@ -1,9 +1,7 @@
 # -*- coding: UTF-8 -*-
 import os
 import pickle
-from io import BytesIO
-import pytesseract
-from PIL import Image
+import muggle_ocr
 from flask import Flask, render_template, request, make_response, session, redirect, url_for
 
 import connect
@@ -91,11 +89,9 @@ def vcode():
         resp = make_response(render_template('error.html', message="网络连接错误！"))
     else:
         resp = make_response(checkcode.content)
-        img = Image.open(BytesIO(checkcode.content))
-
-        optcode = pytesseract.image_to_string(img)
-        optcode = filter(str.isalnum, optcode)
-        optcode = ''.join(list(optcode))
+        img = checkcode.content
+        sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
+        optcode = sdk.predict(image_bytes=img)
         resp.set_cookie('vcode', optcode)
 
     return resp
