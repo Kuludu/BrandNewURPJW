@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link href="static/css/bootstrap.min.css" rel="stylesheet">
+		<title>BranNewURPJW-manage</title>
+	</head>
+	<body>
+		{% include 'header.html' %}
+        <div class="container">
+          <p style="padding-top: 8px;">{{ student.major }}培养方案</p>
+          {% if fails %}
+          <table class="table">
+            <caption><font color="red">不及格成绩</font></caption>
+            <thead>
+              <tr>
+                <th>课程号</th>
+                <th>课序号</th>
+                <th>课程名</th>
+                <th>学分</th>
+                <th>课程属性</th>
+                <th>成绩</th>
+                <th>对应绩点</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for fail in fails %}
+              <tr>
+                <td>{{ fail[0] }}</td>
+                <td>{{ fail[1] }}</td>
+                <td>{{ fail[2] }}</td>
+                <td>{{ fail[3] }}</td>
+                <td>{{ fail[4] }}</td>
+                <td>{{ fail[5] }}</td>
+                <td>0.0</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+          <table class="table">
+            <caption>全部成绩</caption>
+            <thead>
+              <tr>
+                <th>课程号</th>
+                <th>课序号</th>
+                <th>课程名</th>
+                <th>学分</th>
+                <th>课程属性</th>
+                <th>成绩</th>
+                <th>对应绩点</th>
+            </thead>
+            <tbody>
+              {% for course in data['courses'] %}
+              <tr>
+                <td>{{ course[0] }}</td>
+                <td>{{ course[1] }}</td>
+                <td>{{ course[2] }}</td>
+                <td>{{ course[3] }}</td>
+                <td>{{ course[4] }}</td>
+                <td>{{ course[5] }}</td>
+                <td>{{ course[6] }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p>总通过学分：{{ data['pass_point'] }}，总未通过学分：{{ data['fail_point'] }}，GPA（不含选修）：{{ data['gpa'] }}，加权平均分（不含选修）：{{ data['ga'] }}</p>
+        </div>
+
+        <hr>
+
+        <div class="container">
+          <h1 class="text-center">IFTTT成绩推送设置</h1>
+          <form name="push" class="container form-horizontal" method="POST" onsubmit="return validateForm()">
+            <div class="form-group">
+				<label class="col-sm-2 control-label">事件名</label>
+				<div class="col-sm-4">
+					<input type="text" name="event_name" class="col-sm-2 form-control" placeholder="事件名"/>
+				</div>
+			</div>
+            <div class="form-group">
+				<label class="col-sm-2 control-label">key</label>
+				<div class="col-sm-4">
+					<input type="text" name="key" class="col-sm-2 form-control" placeholder="key"/>
+				</div>
+			</div>
+            <div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-default">提交</button>
+				</div>
+			</div>
+          </form>
+        </div>
+		{% include 'footer.html' %}
+
+		<script src="static/js/jquery.min.js"></script>
+	    <script src="static/js/bootstrap.min.js"></script>
+        <script>
+          function validateForm() {
+				var event_name = document.getElementsByName("push")[0].event_name.value;
+				var key = document.getElementsByName("push")[0].key.value;
+				if (event_name == null || event_name == "") {
+					alert("事件名必须填写");
+
+					return false;
+				}
+
+				if (key == null || key == "") {
+					alert("key必须填写");
+
+					return false;
+				}
+
+				alert("成功提交！")
+			}
+        </script>
+	</body>
+</html>

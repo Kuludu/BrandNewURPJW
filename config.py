@@ -1,3 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-host = 'URP here'
+HOST = 'YOUR HOST HERE'
+MAX_RETRY_TIME = 3
+REFRESH_TIME = 5

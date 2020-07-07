@@ -33,17 +33,6 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="vcode" class="col-sm-2 control-label">验证码</label>	
-				<div class="row">
-					<div class="col-sm-2">
-						<input type="text" name="vcode" id="vcode" class="col-sm-2 form-control" placeholder="验证码"/>
-					</div>
-					<div class="m-auto">
-						<img id="vimg" style="margin-top:6px;" src="/vcode" alt="验证码" onclick="refresh()" onload="gettext()" />
-					</div>
-				</div>
-			</div>
-			<div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 					<div class="checkbox">
 						<label>
@@ -71,7 +60,6 @@
 	    	function validateForm() {
 				var username = document.getElementsByName("login")[0].username.value;
 				var password = document.getElementsByName("login")[0].password.value;
-				var vcode = document.getElementsByName("login")[0].vcode.value;
 				if (username == null || username == "") {
 					alert("用户名必须填写");
 
@@ -83,42 +71,6 @@
 
 					return false;
 				}
-
-				if (vcode == null || vcode == "") {
-					alert("验证码必须填写");
-
-					return false;
-				}
-			}
-
-			function refresh() {
-				var vimg = document.getElementById("vimg");
-				vimg.src = "/vcode";
-			}
-
-			function getCookie(cname) {
-			    var name = cname + "=";
-			    var decodedCookie = decodeURIComponent(document.cookie);
-			    var ca = decodedCookie.split(";");
-
-			    for(var i = 0; i<ca.length; i++) {
-			        var c = ca[i];
-
-			        while (c.charAt(0) == " ") {
-			            c = c.substring(1);
-			        }
-
-			        if (c.indexOf(name) == 0) {
-			        	return c.substring(name.length, c.length);
-			        }
-			    }
-
-			    return "";
-			} 
-
-			function gettext() {
-				var vcode = document.getElementById("vcode"); 
-				vcode.value =  getCookie("vcode");
 			}
 	    </script>
 	</body>

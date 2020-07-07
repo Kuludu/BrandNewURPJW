@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
+import sqlite3
 import requests
-from bs4 import BeautifulSoup
-
-import connect
 
 
 def get_gp(score):
@@ -30,92 +28,75 @@ def get_gp(score):
         return 0
 
 
+def get_push_list():
+    ret_list = list()
+    conn = sqlite3.connect('app.db')
+    cur = conn.cursor()
+    res = cur.execute('SELECT sid, pwd, event_name, key FROM `student` WHERE pwd IS NOT NULL')
+    for item in res:
+        ret_list.append(item)
+    conn.close()
+
+    return ret_list
+
+
 class Student:
-    def __get_name(self, res):
-        dom = BeautifulSoup(res.text, 'html.parser')
-        dom = dom.find_all('td', width='275')
-
-        self.name = ''.join((dom[1].text + '(' + dom[0].text + ')').split())
-        self.college = ''.join(dom[24].text.split())
-        self.major = ''.join(dom[25].text.split())
-
-    def __get_all_grade_info(self, res):
-        dom = BeautifulSoup(res.text, 'html.parser')
-        courses_dom = dom.find_all('tr', class_='odd')
-
-        for course_dom in courses_dom:
-            cur_dom = BeautifulSoup(str(course_dom), 'html.parser')
-            course_info = cur_dom.find_all('td')
-
-            try:
-                self.courses.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
-                                     course_info[4].get_text(), course_info[5].get_text(), float(course_info[6].get_text()),
-                                     get_gp(course_info[6].get_text())])
-
-                if float(course_info[6].get_text()) >= 60:
-                    self.pass_point += float(course_info[4].get_text())
-                else:
-                    self.fails.append([course_info[0].get_text(), course_info[1].get_text(), course_info[2].get_text(),
-                                       course_info[4].get_text(), course_info[5].get_text(), course_info[6].get_text()])
-                    self.fail_point += float(course_info[4].get_text())
-
-                if course_info[5] == '任选':
-                    self.elective_point += float(course_info[4].get_text())
-                    continue
-
-                self.sum_gp_with_weight += float(course_info[4].get_text()) * float(get_gp(course_info[6].get_text()))
-                self.sum_grade_with_weight += float(course_info[4].get_text()) * float(course_info[6].get_text())
-
-            except ValueError:
-                return False
-
-    def __get_exam_info(self, res):
-        dom = BeautifulSoup(res.text, 'html.parser')
-        exam_doms = dom.find_all('tr', class_='odd')
-
-        for exam_dom in exam_doms:
-            cur_dom = BeautifulSoup(str(exam_dom), 'html.parser')
-            exam_info = cur_dom.find_all('td')
-
-            self.exams.append([exam_info[2].get_text(), exam_info[3].get_text(), exam_info[4].get_text(), exam_info[5].
-                              get_text(), exam_info[6].get_text(), exam_info[7].get_text()])
-
-    def load(self):
-        self.__get_name(connect.get_name_content(self))
-
-        if self.__get_all_grade_info(connect.get_all_grade_info_content(self)) is False:
-            return False
-
-        self.__get_exam_info(connect.get_exam_content(self))
-
-        try:
-            self.gpa = self.sum_gp_with_weight / (self.pass_point + self.fail_point - self.elective_point)
-            self.ave_grade = self.sum_grade_with_weight / (self.pass_point + self.fail_point - self.elective_point)
-        except ZeroDivisionError:
-            self.gpa = self.ave_grade = 0
-
-    def evaluate(self):
-        res = connect.get_eva_list(self)
-        if res is False:
-            return False
-
-        dom = BeautifulSoup(res.text, 'html.parser')
-        eva_doms = dom.find_all('img', border=0)
-
-        for eva_dom in eva_doms:
-            e = eva_dom['name'].split('#@')
-            if connect.evaluate(self, e[1], e[5]) is False:
-                return False
-
-    def __init__(self):
-        self.pass_point = 0
-        self.fail_point = 0
-        self.elective_point = 0
-        self.sum_gp_with_weight = 0
-        self.sum_grade_with_weight = 0
-        self.gpa = 0
-        self.ave_grade = 0
-        self.courses = []
-        self.exams = []
-        self.fails = []
+    def __init__(self, sid, pwd):
+        self.sid = sid
+        self.pwd = pwd
+        self.conn = sqlite3.connect('app.db')
         self.session = requests.Session()
+        self.name = None
+        self.college = None
+        self.major = None
+        self.event_name = None
+        self.key = None
+
+    def __del__(self):
+        self.conn.close()
+
+    def load_info(self):
+        cur = self.conn.cursor()
+        res = cur.execute('SELECT name, college, major, event_name, key FROM `student` WHERE sid=?', (self.sid,))
+        for item in res:
+            self.name = item[0]
+            self.college = item[1]
+            self.major = item[2]
+            self.event_name = item[3]
+            self.key = item[4]
+
+    def update_info(self, name, college, major):
+        cur = self.conn.cursor()
+        cur.execute('SELECT 1 FROM `student` WHERE sid=?', (self.sid,))
+        cur.fetchall()
+        if cur.rowcount == 0:
+            cur.execute('INSERT INTO `student` (sid, name, college, major) VALUES (?, ?, ?, ?)', (self.sid, name,
+                        college, major))
+        else:
+            cur.execute('UPDATE `student` SET name=?, college=?, major=? WHERE sid=?', (name, college, major,
+                        self.sid))
+        self.conn.commit()
+
+    def update_push(self, event_name, key):
+        cur = self.conn.cursor()
+        cur.execute('UPDATE `student` SET pwd=?, event_name=?, key=? WHERE sid=?', (self.pwd, event_name, key, self.sid))
+        self.conn.commit()
+
+    def update_grade(self, grade):
+        cur = self.conn.cursor()
+        cur.execute('INSERT INTO `grade` (sid, cid, cnumber, cname, point, attr, grade) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    (self.sid, grade[0], grade[1], grade[2], float(grade[3]), grade[4], grade[5]))
+        self.conn.commit()
+
+    def diff_grade(self, grade):
+        cur = self.conn.cursor()
+        cur.execute('SELECT grade FROM `grade` WHERE sid=? AND cid=?', (self.sid, grade[0]))
+        if len(cur.fetchall()) == 0:
+            return True
+
+        return False
+
+    def stop_push(self):
+        cur = self.conn.cursor()
+        cur.execute('UPDATE `student` SET pwd=NULL, event_name=NULL, key=NULL WHERE sid=?', (self.sid,))
+        self.conn.commit()

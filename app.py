@@ -1,114 +1,141 @@
 # -*- coding: UTF-8 -*-
 import os
-import pickle
-import muggle_ocr
-from flask import Flask, render_template, request, make_response, session, redirect, url_for
-
-import connect
-import student
+import push
+from flask import Flask, render_template, make_response, session, redirect, url_for, request, flash
+from student import Student, get_gp
+from fetch import login as stu_login
+from fetch import fetch_exam, fetch_grade, fetch_info
 
 app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = os.urandom(24)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
     if session.get('student') is None:
-        session['student'] = pickle.dumps(student.Student())
-
-    vis_student = pickle.loads(session['student'])
-
-    if request.method == 'GET':
-        if connect.test_login(vis_student):
-            resp = redirect(url_for('manage'))
-        else:
-            session['login'] = 0
-            resp = render_template('login.html')
-    else:
-        username = request.form.get('username')
-        password = request.form.get('password')
-        vcode = request.form.get('vcode')
-
-        if connect.login(vis_student, username, password, vcode):
-            session['login'] = 1
-            session['student'] = pickle.dumps(vis_student)
-            resp = redirect(url_for('manage'))
-        else:
-            resp = make_response(render_template('error.html', message='用户名/密码/验证码错误，或教务系统挂了。'))
-
-        if request.form.get('save'):
-            resp.set_cookie('username', username)
-            resp.set_cookie('password', password)
-        else:
-            resp.delete_cookie('username', username)
-            resp.delete_cookie('password', password)
+        resp = redirect(url_for('login'))
 
     return resp
 
 
-@app.route('/manage', methods=['GET'])
-def manage():
-    resp = redirect(url_for('index'))
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    resp = render_template('error.html', message='应用内部错误！')
+    if request.method == 'GET':
+        if session.get('login') is None:
+            return make_response(render_template('login.html'))
+        else:
+            return redirect(url_for('grade'))
+    elif request.method == 'POST':
+        sid = request.form.get('username')
+        pwd = request.form.get('password')
 
-    if session.get('student') is not None:
-        vis_student = pickle.loads(session['student'])
-        if connect.test_login(vis_student):
-            if vis_student.load() is False:
+        if sid is not None and pwd is not None:
+            student = Student(sid, pwd)
+            if stu_login(student):
+                session['login'] = 1
+                session['username'] = sid
+                session['password'] = pwd
+
+                student_info = fetch_info(student)
+                student.update_info(student_info[0], student_info[1], student_info[2])
+
+                resp = redirect(url_for('grade'))
+            else:
+                resp = make_response(render_template('error.html', message='用户名/密码/验证码识别错误，或教务系统挂了。'))
+
+            if request.form.get('save'):
+                resp.set_cookie('username', sid)
+                resp.set_cookie('password', pwd)
+            else:
+                resp.delete_cookie('username', sid)
+                resp.delete_cookie('password', pwd)
+
+    return resp
+
+
+@app.route('/grade', methods=['GET', 'POST'])
+def grade():
+    if session.get('login') is None:
+        return redirect(url_for('login'))
+
+    student = Student(session.get('username'), session.get('password'))
+    if request.method == 'GET':
+        stu_login(student)
+        student.load_info()
+        grades_info = fetch_grade(student)
+
+        if grades_info is False:
+            return make_response(render_template('error.html', message="应用内部错误"))
+
+        courses = list()
+        fails = list()
+        pass_major = fail_major = pass_point = fail_point = gpa = ga = 0
+        for grade_info in grades_info:
+            try:
+                float(grade_info[5])
+            except ValueError:
                 return make_response(render_template('error.html', message="暂不支持等级制成绩"))
-            resp = make_response(render_template('manage.html', stuff=vis_student))
+
+            courses.append([grade_info[0], grade_info[1], grade_info[2], grade_info[3], grade_info[4], grade_info[5],
+                           get_gp(grade_info[5])])
+            if float(grade_info[5]) >= 60:
+                pass_point += float(grade_info[3])
+                if grade_info[4] != '任选':
+                    pass_major += float(grade_info[3])
+                    gpa += get_gp(grade_info[5]) * float(grade_info[3])
+                    ga += float(grade_info[5]) * float(grade_info[3])
+            else:
+                fail_point += float(grade_info[3])
+                if grade_info[4] != '任选':
+                    fail_major += float(grade_info[3])
+        gpa /= (pass_major + fail_major)
+        ga /= (pass_major + fail_major)
+
+        data = {
+            'courses': courses,
+            'fails': fails,
+            'pass_point': pass_point,
+            'fail_point': fail_point,
+            'gpa': gpa,
+            'ga': ga
+        }
+
+        resp = make_response(render_template('grade.html', student=student, data=data))
+    elif request.method == 'POST':
+        event_name = request.form.get('event_name')
+        key = request.form.get('key')
+        student.update_push(event_name, key)
+        resp = redirect(url_for('grade'))
 
     return resp
 
 
-@app.route('/evaluation', methods=['GET', 'POST'])
-def evaluation():
-    if request.method == 'GET':
-        return redirect(url_for('index'))
+@app.route('/exam', methods=['GET'])
+def exam():
+    if session.get('login') is None:
+        return redirect(url_for('login'))
 
-    resp = make_response(render_template('evaluation.html', status=0))
+    student = Student(session.get('username'), session.get('password'))
+    stu_login(student)
+    student.load_info()
+    exams = fetch_exam(student)
 
-    if session.get('student') is not None:
-        vis_student = pickle.loads(session['student'])
-        if connect.test_login(vis_student):
-            if vis_student.evaluate() is not False:
-                resp = make_response(render_template('evaluation.html', status=1))
-
-    return resp
-
-
-@app.route('/vcode', methods=['GET'])
-def vcode():
-    if session.get('student') is None:
-        session['student'] = pickle.dumps(student.Student())
-
-    vis_student = pickle.loads(session['student'])
-    checkcode = connect.get_vcode(vis_student)
-    session['student'] = pickle.dumps(vis_student)
-
-    if checkcode is False:
-        resp = make_response(render_template('error.html', message="网络连接错误！"))
-    else:
-        resp = make_response(checkcode.content)
-        img = checkcode.content
-        sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
-        optcode = sdk.predict(image_bytes=img)
-        resp.set_cookie('vcode', optcode)
-
-    return resp
+    return render_template('exam.html', student=student, exams=exams)
 
 
 @app.route('/logout', methods=['GET'])
 def logout():
-    if session.get('student') is not None:
-        session.pop('student')
-        session['login'] = 0
+    if session.get('login'):
+        session.pop('username')
+        session.pop('password')
+        session.pop('login')
 
-        resp = make_response(render_template('logout.html'))
-    else:
-        resp = redirect(url_for('index'))
+        return make_response(render_template('logout.html'))
 
-    return resp
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
+    push.execute()
     app.run(host='127.0.0.1', port=8000, debug=False)
