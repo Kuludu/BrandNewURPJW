@@ -20,7 +20,10 @@ def push_grade(event_name, key, course_name, course_grade):
         'Content-Type': 'application/json'
     }
 
-    res = requests.post(api_entery % (event_name, key), headers=headers, data=json.dumps(data))
+    try:
+        res = requests.post(api_entery % (event_name, key), headers=headers, data=json.dumps(data))
+    except requests.exceptions.ConnectionError:
+        return False
 
     if res.status_code == 200:
         return True
