@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 import os
-import push
-from flask import Flask, render_template, make_response, session, redirect, url_for, request, flash
+from flask import Flask, render_template, make_response, session, redirect, url_for, request
 from student import Student, get_gp
 from fetch import login as stu_login
 from fetch import fetch_exam, fetch_grade, fetch_info
@@ -103,9 +102,13 @@ def grade():
 
         resp = make_response(render_template('grade.html', student=student, data=data))
     elif request.method == 'POST':
-        event_name = request.form.get('event_name')
-        key = request.form.get('key')
-        student.update_push(event_name, key)
+        if request.form.get('reset') is not None:
+            student.stop_push()
+        else:
+            event_name = request.form.get('event_name')
+            key = request.form.get('key')
+            student.update_push(event_name, key)
+
         resp = redirect(url_for('grade'))
 
     return resp
@@ -137,5 +140,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    push.execute()
     app.run(host='127.0.0.1', port=8000, debug=False)

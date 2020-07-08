@@ -68,8 +68,7 @@ class Student:
     def update_info(self, name, college, major):
         cur = self.conn.cursor()
         cur.execute('SELECT 1 FROM `student` WHERE sid=?', (self.sid,))
-        cur.fetchall()
-        if cur.rowcount == 0:
+        if len(cur.fetchall()) == 0:
             cur.execute('INSERT INTO `student` (sid, name, college, major) VALUES (?, ?, ?, ?)', (self.sid, name,
                         college, major))
         else:

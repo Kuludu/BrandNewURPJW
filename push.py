@@ -2,7 +2,6 @@
 import json
 import requests
 import time
-import threading
 from student import get_push_list, Student
 from fetch import fetch_grade, login
 
@@ -29,34 +28,32 @@ def push_grade(event_name, key, course_name, course_grade):
         return False
 
 
-class GradeWatcher(threading.Thread):
-    def run(self):
-        push_list = get_push_list()
+def grade_watcher():
+    push_list = get_push_list()
 
-        for item in push_list:
-            student = Student(item[0], item[1])
-            login(student)
-            student.load_info()
+    for item in push_list:
+        student = Student(item[0], item[1])
+        login(student)
+        student.load_info()
 
-            grade_list = fetch_grade(student)
-            if grade_list is False:
-                continue
-            for grade in grade_list:
-                if student.diff_grade(grade):
-                    student.update_grade(grade)
-                    try_time = 0
-                    while try_time < MAX_RETRY_TIME:
-                        if push_grade(student.event_name, student.key, grade[2], grade[5]):
-                            break
+        grade_list = fetch_grade(student)
+        if grade_list is False:
+            continue
+        for grade in grade_list:
+            if student.diff_grade(grade):
+                student.update_grade(grade)
+                try_time = 0
+                while try_time < MAX_RETRY_TIME:
+                    if push_grade(student.event_name, student.key, grade[2], grade[5]):
+                        break
 
-                        try_time += 1
-                        time.sleep(30)
+                    try_time += 1
+                    time.sleep(30)
 
-        time.sleep(60 * REFRESH_TIME)
+    time.sleep(60 * REFRESH_TIME)
 
 
-def execute():
-    watcher = GradeWatcher()
-    watcher.setDaemon(True)
-    watcher.start()
-    watcher.join()
+if __name__ == '__main__':
+    while True:
+        print("Watcher is running.")
+        grade_watcher()
