@@ -19,13 +19,12 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    resp = render_template('error.html', message='应用内部错误！')
     if request.method == 'GET':
         if session.get('login') is None:
             return make_response(render_template('login.html'))
         else:
             return redirect(url_for('grade'))
-    elif request.method == 'POST':
+    else:
         sid = request.form.get('username')
         pwd = request.form.get('password')
 
@@ -101,7 +100,7 @@ def grade():
         }
 
         resp = make_response(render_template('grade.html', student=student, data=data))
-    elif request.method == 'POST':
+    else:
         if request.form.get('reset') is not None:
             student.stop_push()
         else:
