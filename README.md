@@ -110,12 +110,12 @@ python app.py
 ## ChangeLog
 
 * Beta 1.0
-  * 添加GPA计算器功能。
+  * 添加GPA计算器功能
 * Beta 1.1
-  * 添加成绩查询功能。
+  * 添加成绩查询功能
 * Beta 1.2
-  * 添加考试查询功能。
-  * 修复GPA计算错误。
+  * 添加考试查询功能
+  * 修复GPA计算错误
 * Beta 1.3
   * 修复前端bug
   * 完成一键教评功能前端逻辑
@@ -125,4 +125,3 @@ python app.py
   * 更换验证码识别方案为muggle-ocr
 * Beta 1.5
   * 全新重构，支持成绩推送至IFTTT
-
