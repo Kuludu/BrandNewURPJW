@@ -125,3 +125,5 @@ python app.py
   * 更换验证码识别方案为muggle-ocr
 * Beta 1.5
   * 全新重构，支持成绩推送至IFTTT
+* Beta 1.5.1
+  * 修复前端逻辑

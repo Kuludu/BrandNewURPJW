@@ -36,7 +36,8 @@ def grade_watcher():
 
     for item in push_list:
         student = Student(item[0], item[1])
-        login(student)
+        if login(student) is False:
+            continue
         student.load_info()
 
         grade_list = fetch_grade(student)

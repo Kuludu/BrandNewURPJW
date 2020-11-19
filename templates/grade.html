@@ -61,8 +61,13 @@
                 <td>{{ course[2] }}</td>
                 <td>{{ course[3] }}</td>
                 <td>{{ course[4] }}</td>
-                <td>{{ course[5] }}</td>
-                <td>{{ course[6] }}</td>
+                  {% if course[5] >= 90 %}
+                  <td style="color:green">{{ course[5] }}</td>
+                  <td style="color:green">{{ course[6] }}</td>
+                  {% else %}
+                  <td>{{ course[5] }}</td>
+                  <td>{{ course[6] }}</td>
+                  {% endif %}
               </tr>
               {% endfor %}
             </tbody>

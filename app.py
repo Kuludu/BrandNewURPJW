@@ -11,8 +11,10 @@ app.config['SECRET_KEY'] = os.urandom(24)
 
 @app.route('/', methods=['GET'])
 def index():
-    if session.get('student') is None:
+    if session.get('login') is None:
         resp = redirect(url_for('login'))
+    else:
+        resp = redirect(url_for('grade'))
 
     return resp
 
@@ -48,6 +50,8 @@ def login():
             else:
                 resp.delete_cookie('username', sid)
                 resp.delete_cookie('password', pwd)
+        else:
+            resp = make_response(render_template('error.html', message="应用内部错误"))
 
     return resp
 
@@ -59,7 +63,13 @@ def grade():
 
     student = Student(session.get('username'), session.get('password'))
     if request.method == 'GET':
-        stu_login(student)
+        if stu_login(student) is False:
+            session.pop('username')
+            session.pop('password')
+            session.pop('login')
+
+            return redirect(url_for('login'))
+
         student.load_info()
         grades_info = fetch_grade(student)
 
@@ -75,8 +85,8 @@ def grade():
             except ValueError:
                 return make_response(render_template('error.html', message="暂不支持等级制成绩"))
 
-            courses.append([grade_info[0], grade_info[1], grade_info[2], grade_info[3], grade_info[4], grade_info[5],
-                           get_gp(grade_info[5])])
+            courses.append([grade_info[0], grade_info[1], grade_info[2], grade_info[3], grade_info[4],
+                            float(grade_info[5]), get_gp(grade_info[5])])
             if float(grade_info[5]) >= 60:
                 pass_point += float(grade_info[3])
                 if grade_info[4] != '任选':
@@ -116,10 +126,16 @@ def grade():
 @app.route('/exam', methods=['GET'])
 def exam():
     if session.get('login') is None:
-        return redirect(url_for('login'))
+        return make_response(render_template('login.html'))
 
     student = Student(session.get('username'), session.get('password'))
-    stu_login(student)
+    if stu_login(student) is False:
+        session.pop('username')
+        session.pop('password')
+        session.pop('login')
+
+        return redirect(url_for('login'))
+
     student.load_info()
     exams = fetch_exam(student)
 
