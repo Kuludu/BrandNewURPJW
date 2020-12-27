@@ -1,12 +1,13 @@
 # -*- coding: UTF-8 -*-
 import os
-from flask import Flask, render_template, make_response, session, redirect, url_for, request
+from flask import Flask, render_template, make_response, session, redirect, url_for, request, g
 from student import Student, get_gp
 from fetch import login as stu_login
 from fetch import fetch_exam, fetch_grade, fetch_info
 
 app = Flask(__name__, static_folder='static')
 app.config['SECRET_KEY'] = os.urandom(24)
+app.config['VERSION'] = '0.5.2'
 
 
 @app.route('/', methods=['GET'])
@@ -155,4 +156,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000, debug=False)
+    app.run(host='127.0.0.1', port=8000)
