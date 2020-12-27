@@ -24,7 +24,7 @@ def login(student):
             return True
 
         return False
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
         return False
 
 
@@ -37,7 +37,7 @@ def is_logined(student):
             return True
 
         return False
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
         return False
 
 
@@ -56,7 +56,7 @@ def fetch_grade(student):
             ret_grade.append([course_info[x].get_text().strip() for x in [0, 1, 2, 4, 5, 6]])
 
         return ret_grade
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
         return False
 
 
@@ -76,7 +76,7 @@ def fetch_exam(student):
             ret_exam.append([exam_info[x].get_text().strip() for x in [2, 3, 4, 5, 6, 7]])
 
         return ret_exam
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
         return False
 
 
@@ -94,5 +94,5 @@ def fetch_info(student):
         major = info_dom[25].get_text().strip()
 
         return [name, college, major]
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
         return False

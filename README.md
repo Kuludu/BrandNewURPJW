@@ -127,3 +127,7 @@ python app.py
   * 全新重构，支持成绩推送至IFTTT
 * Beta 1.5.1
   * 修复前端逻辑
+* Beta 1.5.2
+  * 添加运行日志
+  * 优化异常处理
+  * 升级tensorflow依赖版本

@@ -2,6 +2,7 @@
 import json
 import requests
 import time
+import logging
 from student import get_push_list, Student
 from fetch import fetch_grade, login
 
@@ -11,6 +12,8 @@ api_entery = 'https://maker.ifttt.com/trigger/%s/with/key/%s'
 
 
 def push_grade(event_name, key, course_name, course_grade):
+    logging.info('Start pushing.')
+
     data = {
         'value1': course_name,
         'value2': course_grade
@@ -22,16 +25,21 @@ def push_grade(event_name, key, course_name, course_grade):
 
     try:
         res = requests.post(api_entery % (event_name, key), headers=headers, data=json.dumps(data))
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
+        logging.error('Push failed.')
         return False
 
     if res.status_code == 200:
+        logging.error('Push success.')
         return True
     else:
+        logging.error('Push failed.')
         return False
 
 
 def grade_watcher():
+    logging.info('Start pulling.')
+
     push_list = get_push_list()
 
     for item in push_list:
@@ -52,12 +60,15 @@ def grade_watcher():
                         break
 
                     try_time += 1
-                    time.sleep(30)
+                    time.sleep(60)
 
     time.sleep(60 * REFRESH_TIME)
 
 
 if __name__ == '__main__':
+    LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
+    logging.basicConfig(filename='bnurp_push.log', level=logging.INFO, format=LOG_FORMAT)
+
     while True:
         print("Watcher is running.")
         grade_watcher()
