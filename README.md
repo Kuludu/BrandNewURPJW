@@ -3,43 +3,15 @@
 URP教务管理系统是部分高校用于对学生进行管理的系统，然而部分学校<del>（比如我校）</del>久未对教务系统进行更新，<del>导致都0202年了在手机上看成绩字还小的跟蚂蚁似的</del>，本项目计划对其一部分功能进行了优化，其中包括：
 
 - [x] GPA计算
-- [x] 学期考试查询
 - [x] 成绩查询
 - [x] 成绩推送到IFTTT
 
 本项目采用Flask框架搭建，已在URP（版本1.5_0）下测试通过，暂不支持辅修、补考以及等级制成绩计算。
 
-![image](https://github.com/Kuludu/BrandNewURPJW/blob/master/img/login.png)
-
 ## 项目结构
 
 ```
-BrandNewURPJW
-├─ LICENSE
-├─ README.md
-├─ app.db # 数据库
-├─ app.py # 前端逻辑
-├─ config.py # 配置文件
-├─ fetch.py # 数据爬虫
-├─ push.py # 定时推送
-├─ requirements.txt # 依赖说明
-├─ static # 静态文件
-│    ├─ css
-│    │    ├─ bootstrap.min.css
-│    │    └─ bootstrap.min.css.map
-│    └─ js
-│           ├─ bootstrap.min.js
-│           ├─ jquery.min.js
-│           └─ jquery.min.map
-├─ student.py # 学生逻辑
-└─ templates # 前端模板
-       ├─ error.html
-       ├─ exam.html
-       ├─ footer.html
-       ├─ grade.html
-       ├─ header.html
-       ├─ login.html
-       └─ logout.html
+
 ```
 
 ## 部署
@@ -50,38 +22,7 @@ BrandNewURPJW
 * MAX_RETRY_TIME ： 推送最大尝试次数
 * REFRESH_TIME ： 数据刷新时间（不建议设置过小<del>毕竟教务系统是块土豆</del>）
 
-### 1.1 服务器部署（推荐）
-
-1. 安装依赖
-
-```shell
-pip install -r requirements.txt
-```
-
-2. 修改**config.py**，将URP教务系统的地址填入。
-3. 使用Gunicorn或其它前端服务拉起项目
-
-```shell
-gunicorn -w 1 -b 0.0.0.0:8080 app:app
-```
-
-可以使用screen等软件让其保持在后台运行（下同），服务将在服务器8080端口上运行。
-
-4. 拉起推送服务
-
-```shell
-python push.py
-```
-
-### 1.2 本地部署
-
-当然，如果您没有服务器资源的话也可以尝试在本地部署，仅需将第三步更改为：
-
-```shell
-python app.py
-```
-
-程序将使用Flask框架内自带的web服务运行，您可以访问[http://localhost:8000/](http://localhost:8000/)使用。
+### 1.1 服务器部署
 
 ### 2.1 IFTTT推送设置
 
@@ -131,3 +72,5 @@ python app.py
   * 添加运行日志
   * 优化异常处理
   * 升级tensorflow依赖版本
+* Beta 2.1.0
+  * 全新重构
