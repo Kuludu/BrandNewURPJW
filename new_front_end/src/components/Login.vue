@@ -1,38 +1,47 @@
 <template>
-  <b-container>
-    <br>
-    <b-row>
-      <b-col offset="3" cols="6">
-        <b-input-group size="lg">
-          <b-input-group-text>用户名（学工号）</b-input-group-text>
-          <b-form-input type="text" v-model="username" placeholder="用户名（学工号）"></b-form-input>
-        </b-input-group>
-      </b-col>
-    </b-row>
-    <br>
-    <b-row>
-      <b-col offset="3" cols="6">
-        <b-input-group size="lg">
-          <b-input-group-text>密码</b-input-group-text>
-          <b-form-input type="password" v-model="password" placeholder="密码"></b-form-input>
-        </b-input-group>
-      </b-col>
-    </b-row>
-    <br>
-    <b-row>
-      <b-col offset="3" cols="6">
-        <b-form-checkbox v-model="save" switch>
-          保存账号密码？
-        </b-form-checkbox>
-      </b-col>
-    </b-row>
-    <br>
-    <b-row>
-      <b-col offset="3" cols="6">
-        <b-button variant="success" @click="login">登录</b-button>
-      </b-col>
-    </b-row>
-  </b-container>
+  <div class="container col-md-4">
+    <b-form @submit="login">
+      <b-form-group
+          id="username-group"
+          label-cols="4"
+          label="用户名（学工号）:"
+      >
+        <b-form-input
+            id="username-input"
+            v-model="form.username"
+            type="text"
+            placeholder="用户名（学工号）"
+            required
+        ></b-form-input>
+      </b-form-group>
+
+      <b-form-group
+        id="password-group"
+        label-cols="4"
+        label="密码："
+      >
+        <b-form-input
+          id="password-input"
+          v-model="form.password"
+          type="password"
+          placeholder="密码"
+          required
+        ></b-form-input>
+      </b-form-group>
+
+
+      <b-form-group id="save-group">
+          <b-form-checkbox
+              v-model="form.save"
+              switch
+          >
+            是否保存用户名密码？
+          </b-form-checkbox>
+      </b-form-group>
+
+      <b-button type="submit" variant="primary">提交</b-button>
+    </b-form>
+  </div>
 </template>
 
 <script>
@@ -40,14 +49,17 @@ export default {
   name: "Login",
   data: function () {
     return {
-      username: "",
-      password: "",
-      save: "checked"
+      form: {
+        username: "",
+        password: "",
+        save: false
+      }
     }
   },
   methods: {
-    login: function () {
-
+    login: function (event) {
+      event.preventDefault()
+      alert(JSON.stringify(this.form))
     }
   }
 }
