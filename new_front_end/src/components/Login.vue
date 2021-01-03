@@ -56,9 +56,25 @@ export default {
       }
     }
   },
+  created() {
+    if (Boolean(this.$cookies.get("save")) === true) {
+      this.form.username = this.$cookies.get("username")
+      this.form.password = this.$cookies.get("password")
+      this.form.save = true
+    }
+  },
   methods: {
     login: function (event) {
       event.preventDefault()
+      if (this.form.save === true) {
+        this.$cookies.set("username", this.form.username)
+        this.$cookies.set("password", this.form.password)
+        this.$cookies.set("save", true)
+      } else {
+        this.$cookies.remove("username")
+        this.$cookies.remove("password")
+        this.$cookies.remove("save")
+      }
       alert(JSON.stringify(this.form))
     }
   }

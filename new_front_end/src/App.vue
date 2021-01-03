@@ -1,9 +1,8 @@
 <template>
   <div id="app">
-    <Navbar />
-    <Login v-show="false"/>
-    <Grade />
-    <Footer />
+    <Navbar/>
+    <Login/>
+    <Footer/>
   </div>
 </template>
 
@@ -11,19 +10,20 @@
 import Navbar from "@/components/Navbar";
 import Login from "@/components/Login";
 import Footer from "@/components/Footer";
-import Grade from "@/components/Grade";
 
 export default {
   name: 'App',
   components: {
-    Grade,
     Footer,
     Login,
     Navbar
   },
-  methods: {
-
-  }
+  data: function () {
+    return {
+      token: ""
+    };
+  },
+  methods: {}
 }
 </script>
 
