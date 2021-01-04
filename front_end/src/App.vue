@@ -35,7 +35,8 @@ export default {
       name: null,
       major: null,
       college: null,
-      grade_info: null
+      grade_info: null,
+      push_info: null
     };
   },
   methods: {
@@ -54,6 +55,7 @@ export default {
         this.showGrade()
       }).catch(function () {
         alert("后端服务器错误！")
+        this.showLogin()
       })
     },
     updateNavbar: function () {
@@ -68,6 +70,10 @@ export default {
         this.college = resp.data.college
         this.major = resp.data.major
         this.grade_info = resp.data.grades
+        this.push_info = {
+          event_name: resp.data.event_name,
+          key: resp.data.key
+        }
 
         this.grade_info.forEach( item => {
           item.course_grade = Number(item.course_grade)
@@ -78,16 +84,41 @@ export default {
         alert("后端服务器错误！")
       })
     },
+    updatePush: function (pushInfo) {
+      let data = qs.stringify({
+        token: this.token
+      })
+      if (pushInfo['push'] === true) {
+        data = qs.stringify({
+          token: this.token,
+          event_name: pushInfo['event_name'],
+          key: pushInfo['key']
+        })
+      }
+      this.axios({
+        method: "post",
+        url: this.API.server + '/api/push',
+        data: data
+      }).then(function () {
+        alert('成功！')
+      }).catch(function () {
+        alert("后端服务器错误！")
+      })
+    },
     showGrade: function () {
       this.login_visible = false
+      this.setting_visible = false
       this.grade_visible = true
     },
     showSetting: function () {
       this.grade_visible = false
+      this.login_visible = false
       this.setting_visible = true
     },
-    onLogout: function () {
-
+    showLogin: function () {
+      this.grade_visible = false
+      this.setting_visible = false
+      this.login_visible = true
     },
     calculate_point: function (score) {
       if (score >= 90) {

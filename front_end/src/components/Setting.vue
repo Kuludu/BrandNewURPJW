@@ -60,7 +60,11 @@ export default {
   methods: {
     submit: function (event) {
       event.preventDefault()
-
+      this.$parent.updatePush({
+        event_name: this.form.event_name,
+        key: this.form.key,
+        save: this.form.save
+      })
     }
   }
 }
