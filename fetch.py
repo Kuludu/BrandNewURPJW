@@ -44,7 +44,7 @@ def is_logined(student):
 def fetch_grade(student):
     try:
         ret_grade = list()
-        if is_logined(student) is False:
+        if login(student) is False:
             return False
 
         res = student.session.get('http://' + HOST + '/gradeLnAllAction.do?type=ln&oper=fainfo')
@@ -63,7 +63,7 @@ def fetch_grade(student):
 def fetch_exam(student):
     try:
         ret_exam = list()
-        if is_logined(student) is False:
+        if login(student) is False:
             return False
 
         res = student.session.get('http://' + HOST + '/ksApCxAction.do?oper=getKsapXx')
@@ -82,7 +82,7 @@ def fetch_exam(student):
 
 def fetch_info(student):
     try:
-        if is_logined(student) is False:
+        if login(student) is False:
             return False
 
         res = student.session.get('http://' + HOST + '/xjInfoAction.do?oper=xjxx')
