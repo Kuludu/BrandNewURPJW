@@ -3,6 +3,7 @@ import json
 import os
 
 from flask import Flask, session, request
+from flask_cors import CORS
 
 from fetch import login as stu_login, fetch_info, fetch_grade
 from student import Student
@@ -11,6 +12,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, BadSigna
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['VERSION'] = '2.1.0'
+CORS(app, supports_credenntials=True)
 
 
 @app.route('/api/login', methods=['POST'])

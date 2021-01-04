@@ -45,6 +45,8 @@
 </template>
 
 <script>
+import qs from 'qs'
+
 export default {
   name: "Login",
   data: function () {
@@ -75,7 +77,19 @@ export default {
         this.$cookies.remove("password")
         this.$cookies.remove("save")
       }
-      alert(JSON.stringify(this.form))
+
+      this.axios({
+        method: "post",
+        url: this.API.server + '/api/login',
+        data: qs.stringify({
+          username: this.form.username,
+          password: this.form.password
+        })
+      }).then(resp => {
+        console.log(resp.data.token)
+      }).catch(function () {
+        alert('后端服务器错误')
+      })
     }
   }
 }
