@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>{{ user }} - {{ training_program }}<small>全部成绩</small></h1>
-    <b-table striped hover :fields="grade_fields" :items="grade_info" :tbody-tr-class="rowClass"></b-table>
+    <b-table striped hover v-if="grade_info !== null" :fields="grade_fields" :items="grade_info" :tbody-tr-class="rowClass"></b-table>
     <p>
       总通过学分：<b-badge variant="success">{{ pass_point }}</b-badge>
     </p>
@@ -20,10 +20,13 @@
 <script>
 export default {
   name: "Grade",
+  props: {
+    user: String,
+    training_program: String,
+    grade_info: Array
+  },
   data: function() {
     return {
-      user: "测试用户",
-      training_program: "测试培养方案",
       grade_fields: [
         { key: "course_number", label: "课程号"},
         { key: "course_order_number", label: "课序号"},
@@ -32,35 +35,6 @@ export default {
         { key: "course_attribute", label: "课程属性", sortable: true},
         { key: "course_grade", label: "成绩", sortable: true},
         { key: "course_point", label: "对应绩点", sortable: true}
-      ],
-      grade_info: [
-        {
-          course_number: "HST-Test1",
-          course_order_number: "01",
-          course_name: "测试课程1",
-          credit: 1.5,
-          course_attribute: "必修",
-          course_point: 2.0,
-          course_grade: 90
-        },
-        {
-          course_number: "HST-Test2",
-          course_order_number: "01",
-          course_name: "测试课程2",
-          credit: 2,
-          course_attribute: "必修",
-          course_point: 3.0,
-          course_grade: 40
-        },
-        {
-          course_number: "HST-Test3",
-          course_order_number: "01",
-          course_name: "测试课程3",
-          credit: 2,
-          course_attribute: "选修",
-          course_point: 2.0,
-          course_grade: 80
-        }
       ]
     };
   },
@@ -73,8 +47,11 @@ export default {
   },
   computed: {
     pass_point: function () {
+      if (this.grade_info === null)
+        return
+
       let return_pass_point = 0.0
-      this.grade_info.forEach(function (item) {
+      this.grade_info.forEach(item => {
         if (item.course_grade >= 60)
           return_pass_point += item.credit
       })
@@ -82,6 +59,9 @@ export default {
       return return_pass_point
     },
     fail_point: function () {
+      if (this.grade_info === null)
+        return
+
       let return_fail_point = 0.0
       this.grade_info.forEach(function (item) {
         if (item.course_grade < 60)
@@ -91,10 +71,13 @@ export default {
       return return_fail_point
     },
     gpa: function () {
+      if (this.grade_info === null)
+        return
+
       let weighted_major_point = 0.0
       let total_major_credit = 0.0
       this.grade_info.forEach(function (item) {
-        if (item.course_attribute !== "选修") {
+        if (item.course_attribute !== "任选") {
          if (item.course_grade >= 60)
            weighted_major_point += item.course_point * item.credit
           total_major_credit += item.credit
@@ -104,12 +87,15 @@ export default {
       return weighted_major_point / total_major_credit
     },
     weighted_average_score: function () {
+      if (this.grade_info === null)
+        return
+
       let weighted_major_grade = 0.0
       let total_major_credit = 0.0
       this.grade_info.forEach(function (item) {
-        if (item.course_attribute !== "选修") {
+        if (item.course_attribute !== "任选") {
           if (item.course_grade >= 60)
-            weighted_major_grade += item.course_point * item.course_grade
+            weighted_major_grade += item.course_grade * item.credit
           total_major_credit += item.credit
         }
       })

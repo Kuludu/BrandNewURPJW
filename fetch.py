@@ -44,7 +44,7 @@ def is_logined(student):
 def fetch_grade(student):
     try:
         ret_grade = list()
-        if login(student) is False:
+        if is_logined(student) is False:
             return False
 
         res = student.session.get('http://' + HOST + '/gradeLnAllAction.do?type=ln&oper=fainfo')
@@ -60,29 +60,9 @@ def fetch_grade(student):
         return False
 
 
-def fetch_exam(student):
-    try:
-        ret_exam = list()
-        if login(student) is False:
-            return False
-
-        res = student.session.get('http://' + HOST + '/ksApCxAction.do?oper=getKsapXx')
-        dom = BeautifulSoup(res.text, 'html.parser')
-        exams_dom = dom.find_all('tr', class_='odd')
-
-        for exam_dom in exams_dom:
-            cur_dom = BeautifulSoup(str(exam_dom), 'html.parser')
-            exam_info = cur_dom.find_all('td')
-            ret_exam.append([exam_info[x].get_text().strip() for x in [2, 3, 4, 5, 6, 7]])
-
-        return ret_exam
-    except requests.exceptions.RequestException:
-        return False
-
-
 def fetch_info(student):
     try:
-        if login(student) is False:
+        if is_logined(student) is False:
             return False
 
         res = student.session.get('http://' + HOST + '/xjInfoAction.do?oper=xjxx')
@@ -94,5 +74,5 @@ def fetch_info(student):
         major = info_dom[25].get_text().strip()
 
         return [name, college, major]
-    except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException and IndexError:
         return False

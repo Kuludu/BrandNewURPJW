@@ -60,7 +60,7 @@ export default {
   methods: {
     submit: function (event) {
       event.preventDefault()
-      alert(JSON.stringify(this.form))
+
     }
   }
 }

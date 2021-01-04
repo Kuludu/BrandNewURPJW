@@ -32,6 +32,7 @@ def login():
             token = serializer.dumps({'username': sid, 'password': pwd}).decode('utf8')
             resp['token'] = token
 
+    # TODO Response code
     return json.dumps(resp)
 
 
@@ -54,6 +55,7 @@ def info():
     resp = {
         'status': 'failed'
     }
+    success = 0
 
     if request.form.get('token'):
         token = request.form.get('token')
@@ -62,37 +64,19 @@ def info():
             user = serializer.loads(token)
 
             student = Student(user['username'], user['password'])
-            student_info = fetch_info(student)
+            stu_login(student)
 
+            student_info = fetch_info(student)
             if student_info:
-                resp['status'] = 'success'
+                success += 1
                 resp['name'] = student_info[0]
                 resp['college'] = student_info[1]
                 resp['major'] = student_info[2]
                 student.update_info(student_info[0], student_info[1], student_info[2])
-        except BadSignature:
-            resp['desc'] = 'Bad token.'
 
-    return json.dumps(resp)
-
-
-@app.route('/api/grade', methods=['POST'])
-def grade():
-    resp = {
-        'status': 'failed'
-    }
-
-    if request.form.get('token'):
-        token = request.form.get('token')
-        serializer = Serializer(app.config["SECRET_KEY"])
-        try:
-            user = serializer.loads(token)
-
-            student = Student(user['username'], user['password'])
             student_grades = fetch_grade(student)
-
             if student_grades:
-                resp['status'] = 'success'
+                success += 1
                 ret_grade = list()
                 for student_grade in student_grades:
                     cur_grade = dict()
@@ -108,6 +92,9 @@ def grade():
                 resp['grades'] = ret_grade
         except BadSignature:
             resp['desc'] = 'Bad token.'
+
+        if success == 2:
+            resp['status'] = 'success'
 
     return json.dumps(resp)
 
