@@ -46,7 +46,7 @@ def grade_watcher():
         student = Student(item[0], item[1])
         if login(student) is False:
             continue
-        student.load_info()
+        push_info = student.load_push()
 
         grade_list = fetch_grade(student)
         if grade_list is False:
@@ -56,7 +56,7 @@ def grade_watcher():
                 student.update_grade(grade)
                 try_time = 0
                 while try_time < MAX_RETRY_TIME:
-                    if push_grade(student.event_name, student.key, grade[2], grade[5]):
+                    if push_grade(push_info['event_name'], push_info['key'], grade[2], grade[5]):
                         break
 
                     try_time += 1
