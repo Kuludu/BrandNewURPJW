@@ -9,7 +9,7 @@
       >
         <b-form-input
             id="event-name-input"
-            v-model="form.event_name"
+            v-model="push_info.event_name"
             type="text"
             placeholder="事件名"
             required
@@ -23,7 +23,7 @@
       >
         <b-form-input
             id="key-input"
-            v-model="form.key"
+            v-model="push_info.key"
             type="password"
             placeholder="key"
             required
@@ -33,7 +33,7 @@
 
       <b-form-group id="push-group">
         <b-form-checkbox
-            v-model="form.push"
+            v-model="push_info.save"
             switch
         >
           是否启用推送？
@@ -48,23 +48,17 @@
 <script>
 export default {
   name: "Setting",
-  data: function () {
-    return {
-      form: {
-        event_name: "",
-        key: "",
-        push: false
-      }
+  props: {
+    push_info: {
+      event_name: String,
+      key: String,
+      save: Boolean
     }
   },
   methods: {
     submit: function (event) {
       event.preventDefault()
-      this.$parent.updatePush({
-        event_name: this.form.event_name,
-        key: this.form.key,
-        save: this.form.save
-      })
+      this.$parent.updatePush()
     }
   }
 }

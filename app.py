@@ -65,6 +65,9 @@ def info():
 
             student = Student(user['username'], user['password'])
             stu_login(student)
+            push_info = student.load_push()
+            resp['event_name'] = push_info['event_name']
+            resp['key'] = push_info['key']
 
             student_info = fetch_info(student)
             if student_info:

@@ -55,6 +55,18 @@ class Student:
 
         return False
 
+    def load_push(self):
+        cur = self.conn.cursor()
+        res = cur.execute('SELECT event_name, key FROM student WHERE sid=?', (self.sid,))
+
+        ret = dict()
+
+        for item in res:
+            ret['event_name'] = item[0]
+            ret['key'] = item[1]
+
+        return ret
+
     def stop_push(self):
         cur = self.conn.cursor()
         cur.execute('UPDATE `student` SET pwd=NULL, event_name=NULL, key=NULL WHERE sid=?', (self.sid,))

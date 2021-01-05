@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <Navbar v-bind:user="name" v-bind:username="username" />
+    <Navbar :user="name" :username="username" />
     <Login v-show="login_visible" />
-    <Grade v-show="grade_visible" v-bind:user="name" v-bind:training_program="major" v-bind:grade_info="grade_info" />
-    <Setting v-show="setting_visible" />
+    <Grade v-show="grade_visible" :user="name" :training_program="major" :grade_info="grade_info" />
+    <Setting v-show="setting_visible" :push_info="push_info" />
     <Footer/>
   </div>
 </template>
@@ -36,7 +36,11 @@ export default {
       major: null,
       college: null,
       grade_info: null,
-      push_info: null
+      push_info: {
+        event_name: "",
+        key: "",
+        save: false
+      }
     };
   },
   methods: {
@@ -51,14 +55,14 @@ export default {
       }).then(resp => {
         this.token = resp.data.token
         this.username = loginInfo['username']
-        this.updateNavbar()
+        this.updateInterface()
         this.showGrade()
       }).catch(function () {
         alert("后端服务器错误！")
         this.showLogin()
       })
     },
-    updateNavbar: function () {
+    updateInterface: function () {
       this.axios({
         method: "post",
         url: this.API.server + '/api/info',
@@ -72,7 +76,8 @@ export default {
         this.grade_info = resp.data.grades
         this.push_info = {
           event_name: resp.data.event_name,
-          key: resp.data.key
+          key: resp.data.key,
+          save: (resp.data.event_name != null && resp.data.key !== null)
         }
 
         this.grade_info.forEach( item => {
@@ -84,17 +89,18 @@ export default {
         alert("后端服务器错误！")
       })
     },
-    updatePush: function (pushInfo) {
+    updatePush: function () {
       let data = qs.stringify({
         token: this.token
       })
-      if (pushInfo['push'] === true) {
+      if (this.push_info['save'] === true) {
         data = qs.stringify({
           token: this.token,
-          event_name: pushInfo['event_name'],
-          key: pushInfo['key']
+          event_name: this.push_info['event_name'],
+          key: this.push_info['key']
         })
       }
+      console.log(data)
       this.axios({
         method: "post",
         url: this.API.server + '/api/push',
