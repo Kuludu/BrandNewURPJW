@@ -8,21 +8,104 @@ URP教务管理系统是部分高校用于对学生进行管理的系统，然�
 
 本项目采用Flask框架搭建，已在URP（版本1.5_0）下测试通过，暂不支持辅修、补考以及等级制成绩计算。
 
+Update(2021.1.5) 采用`Vue.js`全新重构，支持前后端分离部署。
+
+![image](https://github.com/Kuludu/BrandNewURPJW/blob/master/img/mainpage.png)
+
 ## 项目结构
 
 ```
-
+BrandNewURPJW
+├─ Dockerfile
+├─ LICENSE
+├─ README.md
+├─ app.db # 数据库
+├─ app.py # 后端主程序
+├─ config.py # 配置文件
+├─ fetch.py # 数据爬虫
+├─ front_end # 前端
+│    ├─ babel.config.js
+│    ├─ package-lock.json
+│    ├─ package.json
+│    ├─ public
+│    │    └─ index.html
+│    └─ src 
+│         ├─ App.vue # 主程序
+│         ├─ components # 组件
+│         ├─ config # 配置文件
+│         └─ main.js
+├─ push.py # 定时推送
+├─ requirements.txt # 依赖
+└─ student.py # 学生数据库逻辑
 ```
 
 ## 部署
 
 ### 0.1 配置文件参数说明
 
+#### 前端配置文件
+
+`./front_end/src/config/server.js`
+
+* server : 后端服务器地址
+
+#### 后端配置文件
+
+`./config.py`
+
 * HOST ： URP教务系统主机地址
 * MAX_RETRY_TIME ： 推送最大尝试次数
 * REFRESH_TIME ： 数据刷新时间（不建议设置过小<del>毕竟教务系统是块土豆</del>）
 
 ### 1.1 服务器部署
+
+#### 前端部分
+
+1. 项目环境依赖安装
+
+```bash
+npm install
+```
+
+2. 修改前端配置文件
+
+详见前节。
+
+3. 编译前端文件
+
+```bash
+npm run build
+```
+
+4. 部署前端
+
+将上一步编译完成的前端文件部署到前端服务器中。
+
+#### 后端部分
+
+1. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+2. 修改后端配置
+
+详见前节。
+
+3. 使用Gunicorn或其它前端程序拉起项目
+
+可以使用screen等软件让其保持在后台运行（下同），服务将在服务器8080端口上运行。
+
+```bash
+gunicorn -w 1 -b 0.0.0.0:8080 app:app
+```
+
+4. 拉起推送服务
+
+```bash
+python push.py
+```
 
 ### 2.1 IFTTT推送设置
 
