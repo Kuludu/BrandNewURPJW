@@ -2,7 +2,7 @@
   <div id="app">
     <Navbar :user="name" :username="username" />
     <Login v-show="login_visible" />
-    <Grade v-show="grade_visible" :user="name" :training_program="major" :grade_info="grade_info" />
+    <Grade v-show="grade_visible" :user="name" :username="username" :training_program="major" :grade_info="grade_info" />
     <Setting v-show="setting_visible" :push_info="push_info" />
     <Footer/>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1>{{ user }} - {{ training_program }}<small>全部成绩</small></h1>
-    <b-table striped hover v-if="grade_info !== null" :fields="grade_fields" :items="grade_info" :tbody-tr-class="rowClass"></b-table>
+    <h1>{{ user }}({{ username }}) - {{ training_program }}<small>全部成绩</small></h1>
+    <b-table striped hover responsive v-if="grade_info !== null" :fields="grade_fields" :items="grade_info" :tbody-tr-class="rowClass"></b-table>
     <p>
       总通过学分：<b-badge variant="success">{{ pass_point }}</b-badge>
     </p>
@@ -22,6 +22,7 @@ export default {
   name: "Grade",
   props: {
     user: String,
+    username: String,
     training_program: String,
     grade_info: Array
   },
