@@ -65,9 +65,6 @@ def info():
 
             student = Student(user['username'], user['password'])
             stu_login(student)
-            push_info = student.load_push()
-            resp['event_name'] = push_info['event_name']
-            resp['key'] = push_info['key']
 
             student_info = fetch_info(student)
             if student_info:
@@ -76,6 +73,9 @@ def info():
                 resp['college'] = student_info[1]
                 resp['major'] = student_info[2]
                 student.update_info(student_info[0], student_info[1], student_info[2])
+                push_info = student.load_push()
+                resp['event_name'] = push_info['event_name']
+                resp['key'] = push_info['key']
 
             student_grades = fetch_grade(student)
             if student_grades:
