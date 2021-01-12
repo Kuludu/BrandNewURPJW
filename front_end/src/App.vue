@@ -57,7 +57,7 @@ export default {
         this.username = loginInfo['username']
         this.updateInterface()
         this.showGrade()
-      }).catch(function () {
+      }).catch(() => {
         alert("后端服务器错误！")
         this.showLogin()
       })
@@ -85,7 +85,8 @@ export default {
           item.credit = Number(item.credit)
           item.course_point = this.calculate_point(item.course_grade)
         })
-      }).catch(function () {
+      }).catch(() => {
+        this.showLogin()
         alert("后端服务器错误！")
       })
     },
