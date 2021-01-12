@@ -117,7 +117,7 @@ python push.py
 
 2. 查看推送地址[https://ifttt.com/create](https://ifttt.com/maker_webhooks)点击右上角的`Documentation`进入到接口api界面获取秘钥。
 
-3. 在成绩查询中（页面最下方）填入上述两个参数并提交。
+3. 设置页面中（右上方个人信息下拉框中进入）填入上述两个参数并提交。
 
 ![image](https://github.com/Kuludu/BrandNewURPJW/blob/master/img/push.png)
 
