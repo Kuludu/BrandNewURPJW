@@ -81,7 +81,6 @@ export default {
         }
 
         this.grade_info.forEach( item => {
-          item.course_grade = Number(item.course_grade)
           item.credit = Number(item.credit)
           item.course_point = this.calculate_point(item.course_grade)
         })
@@ -128,26 +127,40 @@ export default {
       this.login_visible = true
     },
     calculate_point: function (score) {
-      if (score >= 90) {
-        return 4.0
-      } else if (85 <= score && score < 90) {
-        return 3.7
-      } else if (82 <= score && score < 85) {
-        return 3.3
-      } else if (78 <= score && score < 82) {
-        return 3.0
-      } else if (75 <= score && score < 78) {
-        return 2.7
-      } else if (71 <= score && score < 75) {
-        return 2.3
-      } else if (66 <= score && score < 71) {
-        return 2.0
-      } else if (62 <= score && score < 66) {
-        return 1.7
-      } else if (60 <= score && score < 62) {
-        return 1.3
+      if (isNaN(Number(score))) {
+        if (score === "优") {
+          return 4.0
+        } else if (score === "良") {
+          return 3.0
+        } else if (score === "中") {
+          return 2.0
+        } else if (score === "及格") {
+          return 1.3
+        } else {
+          return 0.0
+        }
       } else {
-        return 0.0
+        if (score >= 90) {
+          return 4.0
+        } else if (85 <= score && score < 90) {
+          return 3.7
+        } else if (82 <= score && score < 85) {
+          return 3.3
+        } else if (78 <= score && score < 82) {
+          return 3.0
+        } else if (75 <= score && score < 78) {
+          return 2.7
+        } else if (71 <= score && score < 75) {
+          return 2.3
+        } else if (66 <= score && score < 71) {
+          return 2.0
+        } else if (62 <= score && score < 66) {
+          return 1.7
+        } else if (60 <= score && score < 62) {
+          return 1.3
+        } else {
+          return 0.0
+        }
       }
     }
   }

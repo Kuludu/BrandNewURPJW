@@ -157,3 +157,5 @@ python push.py
   * 升级tensorflow依赖版本
 * Beta 2.1.0
   * 全新重构
+* Beta 2.1.1
+  *  支持等级制成绩
