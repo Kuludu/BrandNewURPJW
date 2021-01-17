@@ -1,9 +1,9 @@
 <template>
   <div id="app">
-    <Navbar :user="name" :username="username" />
-    <Login v-show="login_visible" />
-    <Grade v-show="grade_visible" :user="name" :username="username" :training_program="major" :grade_info="grade_info" />
-    <Setting v-show="setting_visible" :push_info="push_info" />
+    <Navbar :user="name" :username="username"/>
+    <Login v-show="login_visible"/>
+    <Grade v-show="grade_visible" :grade_info="grade_info" :training_program="major" :user="name" :username="username"/>
+    <Setting v-show="setting_visible" :push_info="push_info"/>
     <Footer/>
   </div>
 </template>
@@ -80,7 +80,7 @@ export default {
           save: (resp.data.event_name != null && resp.data.key !== null)
         }
 
-        this.grade_info.forEach( item => {
+        this.grade_info.forEach(item => {
           item.credit = Number(item.credit)
           item.course_point = this.calculate_point(item.course_grade)
         })

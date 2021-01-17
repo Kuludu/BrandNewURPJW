@@ -4,29 +4,29 @@
     <b-form @submit="submit">
       <b-form-group
           id="event-name-group"
-          label-cols="4"
           label="事件名:"
+          label-cols="4"
       >
         <b-form-input
             id="event-name-input"
             v-model="push_info.event_name"
-            type="text"
             placeholder="事件名"
             required
+            type="text"
         ></b-form-input>
       </b-form-group>
 
       <b-form-group
           id="key-group"
-          label-cols="4"
           label="key"
+          label-cols="4"
       >
         <b-form-input
             id="key-input"
             v-model="push_info.key"
-            type="password"
             placeholder="key"
             required
+            type="password"
         ></b-form-input>
       </b-form-group>
 

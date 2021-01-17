@@ -3,7 +3,7 @@
     <b-navbar-brand href="#">BrandNewURPJW</b-navbar-brand>
     <b-navbar-nav class="ml-auto">
       <b-nav-item @click="onShowGrade">成绩查询</b-nav-item>
-      <b-nav-item-dropdown v-if="user !== null" text="设置" right>
+      <b-nav-item-dropdown v-if="user !== null" right text="设置">
         <b-dropdown-item @click="onShowSetting">推送设置</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>

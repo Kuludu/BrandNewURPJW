@@ -3,40 +3,40 @@
     <b-form @submit="login">
       <b-form-group
           id="username-group"
-          label-cols="4"
           label="用户名（学工号）:"
+          label-cols="4"
       >
         <b-form-input
             id="username-input"
             v-model="form.username"
-            type="text"
             placeholder="用户名（学工号）"
             required
+            type="text"
         ></b-form-input>
       </b-form-group>
 
       <b-form-group
-        id="password-group"
-        label-cols="4"
-        label="密码："
+          id="password-group"
+          label="密码："
+          label-cols="4"
       >
         <b-form-input
-          id="password-input"
-          v-model="form.password"
-          type="password"
-          placeholder="密码"
-          required
+            id="password-input"
+            v-model="form.password"
+            placeholder="密码"
+            required
+            type="password"
         ></b-form-input>
       </b-form-group>
 
 
       <b-form-group id="save-group">
-          <b-form-checkbox
-              v-model="form.save"
-              switch
-          >
-            是否保存用户名密码？
-          </b-form-checkbox>
+        <b-form-checkbox
+            v-model="form.save"
+            switch
+        >
+          是否保存用户名密码？
+        </b-form-checkbox>
       </b-form-group>
 
       <b-button type="submit" variant="primary">提交</b-button>
