@@ -1,6 +1,6 @@
 Flask==1.0.2
 muggle_ocr==1.0.3
-tensorflow==2.5.0
+tensorflow==2.5.1
 requests==2.24.0
 beautifulsoup4==4.9.1
 itsdangerous~=1.1.0
